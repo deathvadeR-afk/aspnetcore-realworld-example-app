@@ -61,4 +61,38 @@ public class CreateTests : SliceFixture
         Assert.Equal(article.Title, command.Article.Title);
         Assert.Equal(article.TagList.Count(), command.Article.TagList?.Count());
     }
+
+    [Fact]
+    public async Task Keeps_Hyphens_In_Slug_On_Create()
+    {
+        var article = await ArticleHelpers.CreateArticle(
+            this,
+            new Create.Command(
+                new Create.ArticleData
+                {
+                    Title = "Rock-and-Roll Basics",
+                    Description = "d",
+                    Body = "b",
+                }
+            )
+        );
+        Assert.Equal("rock-and-roll-basics", article.Slug);
+    }
+
+    [Fact]
+    public async Task Keeps_Both_Hyphens_Next_To_Each_Other_In_Slug_On_Create()
+    {
+        var article = await ArticleHelpers.CreateArticle(
+            this,
+            new Create.Command(
+                new Create.ArticleData
+                {
+                    Title = "Rock--Roll",
+                    Description = "d",
+                    Body = "b",
+                }
+            )
+        );
+        Assert.Equal("rock--roll", article.Slug);
+    }
 }

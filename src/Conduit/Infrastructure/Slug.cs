@@ -22,7 +22,7 @@ public static partial class Slug
         return str;
     }
 
-    [GeneratedRegex("[^a-z0-9\\s]")]
+    [GeneratedRegex("[^-a-z0-9\\s]")]
     private static partial Regex InvalidCharsRegex();
 
     [GeneratedRegex("\\s+")]
