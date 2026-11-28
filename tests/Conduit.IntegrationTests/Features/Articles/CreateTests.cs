@@ -61,4 +61,21 @@ public class CreateTests : SliceFixture
         Assert.Equal(article.Title, command.Article.Title);
         Assert.Equal(article.TagList.Count(), command.Article.TagList?.Count());
     }
+
+    [Fact(DisplayName = "[QP-SMDOTNET-6-1] Keeps the hyphen in the slug of an article titled with a hyphen")]
+    public async Task Keeps_Hyphen_In_Slug_For_Hyphenated_Title()
+    {
+        var command = new Create.Command(
+            new Create.ArticleData
+            {
+                Title = "Rock-and-Roll Basics",
+                Description = "Description of the test article",
+                Body = "Body of the test article",
+            }
+        );
+
+        var article = await ArticleHelpers.CreateArticle(this, command);
+
+        Assert.Equal("rock-and-roll-basics", article.Slug);
+    }
 }
