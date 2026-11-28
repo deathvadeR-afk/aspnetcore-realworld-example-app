@@ -55,4 +55,41 @@ public class EditTests : SliceFixture
         Assert.Contains(edited.Article.TagList[0], command.Model.Article.TagList ?? []);
         Assert.Contains(edited.Article.TagList[1], command.Model.Article.TagList ?? []);
     }
+
+    [Fact]
+    public async Task Keeps_Hyphens_In_Slug_When_Article_Is_Edited()
+    {
+        var createdArticle = await ArticleHelpers.CreateArticle(
+            this,
+            new Create.Command(
+                new Create.ArticleData
+                {
+                    Title = "Basics",
+                    Description = "d",
+                    Body = "b",
+                }
+            )
+        );
+
+        var command = new Edit.Command(
+            new(
+                new Edit.ArticleData
+                {
+                    Title = "Rock-and-Roll Basics",
+                }
+            ),
+            createdArticle.Slug ?? throw new InvalidOperationException()
+        );
+
+        var articleEditHandler = new Edit.Handler(
+            GetDbContext(),
+            new StubCurrentUserAccessor(UserHelpers.DefaultUserName)
+        );
+        var edited = await articleEditHandler.Handle(
+            command,
+            new System.Threading.CancellationToken()
+        );
+
+        Assert.Equal("rock-and-roll-basics", edited.Article.Slug);
+    }
 }
